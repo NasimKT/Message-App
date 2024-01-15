@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Messaging App</title>
+    <style>
+        body[data-role="USER1"] .user1 {
+            text-align: right;
+            color: #3498db; /* Blue color for USER1 */
+        }
+
+        body[data-role="USER2"] .user2 {
+            text-align: left;
+            color: #e74c3c; /* Red color for USER2 */
+        }
+
+        .user1, .user2 {
+            margin: 5px 0;
+            word-wrap: break-word;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .user1 {
+            float: right;
+            clear: both;
+        }
+
+        .user2 {
+            float: left;
+            clear: both;
+        }
+
+        #messageForm {
+            clear: both;
+        }
+
+        #messageInput {
+            width: 80%;
+        }
+
+        button {
+            width: 18%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="messages"></div>
+
+<form id="messageForm">
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button type="submit">Send</button>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    socket.on('userRole', (role) => {
+        console.log(`You are ${role}`);
+        document.body.setAttribute('data-role', role);
+    });
+
+    socket.on('message', (data) => {
+        const messagesDiv = document.getElementById('messages');
+        const messageParagraph = document.createElement('p');
+        messageParagraph.classList.add(data.role === 'USER1' ? 'user1' : 'user2');
+        messageParagraph.textContent = `${data.role}: ${data.message}`;
+        messagesDiv.appendChild(messageParagraph);
+    });
+
+    document.getElementById('messageForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+
+        if (message !== '') {
+            socket.emit('message', message);
+            messageInput.value = '';
+        }
+    });
+</script>
+
+</body>
+</html>

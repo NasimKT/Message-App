@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    .App {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      color: #333;
+    }
+
+    input {
+      margin: 10px 0;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    p {
+      color: #4caf50;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="App">
+  <h1 class="header">LOGIN</h1>
+  <input
+    type="email"
+    placeholder="Enter your email"
+    id="email"
+  />
+  <button onclick="handleSendOTP()">Send OTP</button>
+  <br />
+  <div id="otpSection" style="display: none;">
+    <input
+      type="text"
+      placeholder="Enter OTP"
+      id="otp"
+    />
+    <button onclick="handleLogin()">Login</button>
+  </div>
+  <p id="loggedInMessage" style="display: none;">You are logged in!</p>
+</div>
+
+<script>
+  function handleSendOTP() {
+    var email = document.getElementById('email').value;
+    // Simulating the request to send OTP (replace with your actual API call)
+    alert('OTP sent to ' + email + '. Please check your inbox.');
+    document.getElementById('otpSection').style.display = 'block';
+  }
+
+  function handleLogin() {
+    var email = document.getElementById('email').value;
+    var otp = document.getElementById('otp').value;
+
+    // Simulating the request to verify OTP (replace with your actual API call)
+    var isVerified = confirm('Simulate OTP verification? Click OK for success, Cancel for failure.');
+    
+    if (isVerified) {
+      document.getElementById('otpSection').style.display = 'none';
+      document.getElementById('loggedInMessage').style.display = 'block';
+    } else {
+      alert('Invalid OTP. Please try again.');
+    }
+  }
+</script>
+
+</body>
+</html>
