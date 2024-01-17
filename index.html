@@ -65,7 +65,21 @@
 </form>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
 <script>
+    // Function to check if the user is logged in
+    function checkLogin() {
+        const token = localStorage.getItem('authToken');
+
+        // Redirect to the login page if the user is not logged in
+        if (!token) {
+            window.location.href = '/login'; // Change the URL based on your login page
+        }
+    }
+
+    // Call the checkLogin function when the page loads
+    checkLogin();
+
     const socket = io();
 
     socket.on('userRole', (role) => {
@@ -92,6 +106,5 @@
         }
     });
 </script>
-
 </body>
 </html>

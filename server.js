@@ -12,12 +12,18 @@ const server = http.createServer(app);
 const io = socketIO(server);
 app.use(bodyParser.json());
 app.use(cors()); // Use the 'cors' middleware
+const session = require('express-session');
+app.use(session({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
+
+
+// Set the 'user' property
+session.user = false;
 
 const transporter = nodemailer.createTransport({
   service: 'Gmail', // Replace with your email service (e.g., 'Gmail')
   auth: {
-    user: '', // Sender email address
-    pass: '',    // Sender email password
+    user: 'me.nasimkt@gmail.com', // Sender email address
+    pass: 'crzaxyvgtuwuetbl',    // Sender email password
   },
 });
 
@@ -38,7 +44,7 @@ app.post('/sendOTP', async (req, res) => {
 
   // Define email message options
   const mailOptions = {
-    from: '', // Sender email address
+    from: 'me.nasimkt@gmail.com', // Sender email address
     to: email,
     subject: 'Your OTP for Login',
     text: `Your OTP is: ${otp}`,
@@ -48,6 +54,7 @@ app.post('/sendOTP', async (req, res) => {
     // Send the email with OTP
     await transporter.sendMail(mailOptions);
     res.status(200).json({ message: 'OTP sent successfully' });
+    console.log('Your OTP is: ${otp}');
   } catch (error) {
     console.error('Error sending email:', error);
     res.status(500).json({ error: 'An error occurred while sending OTP' });
@@ -62,6 +69,8 @@ app.post('/verifyOTP', (req, res) => {
     // OTP is correct, remove it from the map
     otpMap.delete(email);
     res.status(200).json({ verified: true });
+     // Set a session variable (you can customize this based on your needs)
+    req.session.user = true;
   } else {
     res.status(200).json({ verified: false });
   }
@@ -69,7 +78,12 @@ app.post('/verifyOTP', (req, res) => {
 
 // Serve HTML file
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  // Check if the user is logged in
+  if (req.session.user) {
+    res.sendFile(path.join(__dirname, 'index.html'));
+  } else {
+    res.redirect('/login'); // Redirect to login page if not logged in
+  }
 });
 
 app.get('/login', (req, res) => {

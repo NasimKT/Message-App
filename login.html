@@ -77,29 +77,50 @@
   </div>
   <p id="loggedInMessage" style="display: none;">You are logged in!</p>
 </div>
-
+<script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
 <script>
-  function handleSendOTP() {
-    var email = document.getElementById('email').value;
-    // Simulating the request to send OTP (replace with your actual API call)
-    alert('OTP sent to ' + email + '. Please check your inbox.');
-    document.getElementById('otpSection').style.display = 'block';
-  }
+  const { useState } = React; // Import the useState hook
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [isOTPVerified, setIsOTPVerified] = useState(false);
+  // Import the axios library
+  const axios = require('axios');
 
-  function handleLogin() {
-    var email = document.getElementById('email').value;
-    var otp = document.getElementById('otp').value;
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+    setIsOTPVerified(false); // Reset OTP verification status when email changes
+  };
 
-    // Simulating the request to verify OTP (replace with your actual API call)
-    var isVerified = confirm('Simulate OTP verification? Click OK for success, Cancel for failure.');
-    
-    if (isVerified) {
-      document.getElementById('otpSection').style.display = 'none';
-      document.getElementById('loggedInMessage').style.display = 'block';
-    } else {
-      alert('Invalid OTP. Please try again.');
+  const handleOTPChange = (event) => {
+    setOtp(event.target.value);
+  };
+
+  const handleSendOTP = async () => {
+    try {
+      // Send a request to your backend to send an email with OTP
+      await axios.post('http://localhost:3000/sendOTP', { email });
+      alert('OTP sent to your email address. Please check your inbox.');
+    } catch (error) {
+      console.error('Error sending OTP:', error);
     }
-  }
+  };
+
+  const handleLogin = async () => {
+    try {
+      // Send a request to your backend to verify the OTP
+      const response = await axios.post('http://localhost:3000/verifyOTP', { email, otp });
+
+      if (response.data.verified) {
+        setIsOTPVerified(true);
+        alert('Login successful!');
+      } else {
+        alert('Invalid OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+    }
+  };
 </script>
 
 </body>
