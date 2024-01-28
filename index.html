@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Messaging App</title>
+    <title>Eurekaa!</title>
     <style>
         body[data-role="USER1"] .user1 {
             text-align: right;
-            color: #3498db; /* Blue color for USER1 */
+            color: #3498db;
+            /* Blue color for USER1 */
         }
 
         body[data-role="USER2"] .user2 {
             text-align: left;
-            color: #e74c3c; /* Red color for USER2 */
+            color: #e74c3c;
+            /* Red color for USER2 */
         }
 
-        .user1, .user2 {
+        .user1,
+        .user2 {
             margin: 5px 0;
             word-wrap: break-word;
         }
@@ -27,9 +31,11 @@
 
         #messages {
             border: 1px solid #ccc;
-            padding: 10px;
-            max-height: 300px;
+            max-width: max-content;
+            width: 100%;
+            padding: 20% 50%;
             overflow-y: auto;
+            margin-right: 10%;
         }
 
         .user1 {
@@ -47,64 +53,139 @@
         }
 
         #messageInput {
-            width: 80%;
+            width: 100%;
+            transition: height 0.2s ease-in-out;
+            min-height: 30px;
+            border: none;
+            outline: none;
+            border-bottom: 2px solid #ffc400;
+            background: transparent;
         }
 
         button {
-            width: 18%;
+            width: 100%;
+            min-height: 20px;
+            color: #ffc400;
+            border: none;
+            background-color: #fff;
+            cursor: pointer;
+            width: 50px;
+            height: 30px;
+            background: transparent;
+
+        }
+        table{
+            position: fixed;
+            bottom: 0%;
+        }
+
+        td {
+            width: 100%;
+            height: 50px;
+        }
+        @media only screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3){
+            #messages{
+                height: 600px;
+            }
+        }
+        @media only screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2){
+            #messages{
+                height: 380px;
+            }
+        }
+        @media only screen and (device-width: 390px) and (device-height: 844px){
+            #messages{
+                height: 500px;
+            }
+        }
+        @media only screen and (device-width: 412px) and (device-height: 915px){
+            #messages{
+                height: 550px;
+            }
+        }
+        @media only screen and (device-width: 1024px) and (device-height: 1366px){
+            #messages{
+                height: 750px;
+            }
+        }
+        @media only screen and (device-height: 1024px) and (device-width: 1366px){
+            #messages{
+                height: 330px;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
+    <div class="gradient"></div>
+    <table>
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <div id="messages"></div>
+                </td>
+            </tr>
+            <tr>
+                <form id="messageForm">
+                    <td>
+                        <input type="text" id="messageInput" placeholder="Type your message..." oninput="resize()">
+                    </td>
+                    <td>
+                        <button type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
+                            </svg>
+                        </button>
+                    </td>
+                </form>
+            </tr>
+        </tbody>
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 
-<div id="messages"></div>
-
-<form id="messageForm">
-    <input type="text" id="messageInput" placeholder="Type your message...">
-    <button type="submit">Send</button>
-</form>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-
-<script>
-    // Function to check if the user is logged in
-    function checkLogin() {
-        const token = localStorage.getItem('authToken');
-
-        // Redirect to the login page if the user is not logged in
-        if (!token) {
-            window.location.href = '/login'; // Change the URL based on your login page
+    <script>
+        // Function to check if the user is logged in
+        function checkLogin() {
+            const token = localStorage.getItem('user');
+            console.log(token);
+            // Redirect to the login page if the user is not logged in
+            if (token === false) {
+                window.location.href = 'login.html'; // Change the URL based on your login page
+            }
         }
-    }
 
-    // Call the checkLogin function when the page loads
-    checkLogin();
+        // Call the checkLogin function when the page loads
+        //checkLogin();
 
-    const socket = io();
 
-    socket.on('userRole', (role) => {
-        console.log(`You are ${role}`);
-        document.body.setAttribute('data-role', role);
-    });
+        const socket = io();
 
-    socket.on('message', (data) => {
-        const messagesDiv = document.getElementById('messages');
-        const messageParagraph = document.createElement('p');
-        messageParagraph.classList.add(data.role === 'USER1' ? 'user1' : 'user2');
-        messageParagraph.textContent = `${data.role}: ${data.message}`;
-        messagesDiv.appendChild(messageParagraph);
-    });
+        socket.on('userRole', (role) => {
+            console.log(`You are ${role}`);
+            document.body.setAttribute('data-role', role);
+        });
 
-    document.getElementById('messageForm').addEventListener('submit', (event) => {
-        event.preventDefault();
-        const messageInput = document.getElementById('messageInput');
-        const message = messageInput.value.trim();
+        socket.on('message', (data) => {
+            const messagesDiv = document.getElementById('messages');
+            const messageParagraph = document.createElement('p');
+            messageParagraph.classList.add(data.role === 'USER1' ? 'user1' : 'user2');
+            messageParagraph.textContent = `${data.role}: ${data.message}`;
+            messagesDiv.appendChild(messageParagraph);
+        });
 
-        if (message !== '') {
-            socket.emit('message', message);
-            messageInput.value = '';
-        }
-    });
-</script>
+        document.getElementById('messageForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+
+            if (message !== '') {
+                socket.emit('message', message);
+                messageInput.value = '';
+            }
+        });
+    </script>
 </body>
+
 </html>

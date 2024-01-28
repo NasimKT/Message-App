@@ -54,7 +54,7 @@ app.post('/sendOTP', async (req, res) => {
     // Send the email with OTP
     await transporter.sendMail(mailOptions);
     res.status(200).json({ message: 'OTP sent successfully' });
-    console.log('Your OTP is: ${otp}');
+    console.log(`Your OTP is: ${otp}`);
   } catch (error) {
     console.error('Error sending email:', error);
     res.status(500).json({ error: 'An error occurred while sending OTP' });
@@ -64,14 +64,21 @@ app.post('/sendOTP', async (req, res) => {
 app.post('/verifyOTP', (req, res) => {
   const { email, otp } = req.body;
 
+  console.log(otp);
+  const storedOTP= otpMap.get(email)
+
   // Check if the provided OTP matches the one stored in the map
-  if (otpMap.has(email) && otpMap.get(email) === otp) {
+  if (!storedOTP || parseInt(otp) !== storedOTP) {
+    
+    console.log('Verified');
     // OTP is correct, remove it from the map
     otpMap.delete(email);
     res.status(200).json({ verified: true });
      // Set a session variable (you can customize this based on your needs)
     req.session.user = true;
   } else {
+    
+    console.log('Moonji');
     res.status(200).json({ verified: false });
   }
 });

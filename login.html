@@ -55,6 +55,7 @@
       font-weight: bold;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
 
@@ -77,30 +78,36 @@
   </div>
   <p id="loggedInMessage" style="display: none;">You are logged in!</p>
 </div>
-<script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
 <script>
-  const { useState } = React; // Import the useState hook
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [isOTPVerified, setIsOTPVerified] = useState(false);
-  // Import the axios library
-  const axios = require('axios');
+  // Assuming you have these state variables and their corresponding set functions
+  let email = '';
+  let otp = '';
+  let isOTPVerified = false;
 
   const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-    setIsOTPVerified(false); // Reset OTP verification status when email changes
+    email = event.target.value;
+    isOTPVerified = false; // Reset OTP verification status when email changes
   };
 
   const handleOTPChange = (event) => {
-    setOtp(event.target.value);
+    otp = event.target.value;
   };
 
   const handleSendOTP = async () => {
     try {
+      // Extract email from the input field
+      const emailInput = document.getElementById('email');
+      email = emailInput.value;
+
+      otpArea = document.getElementById('otpSection');
+
       // Send a request to your backend to send an email with OTP
       await axios.post('http://localhost:3000/sendOTP', { email });
       alert('OTP sent to your email address. Please check your inbox.');
+      
+      otpArea.style.display = "block";
+
     } catch (error) {
       console.error('Error sending OTP:', error);
     }
@@ -111,9 +118,12 @@
       // Send a request to your backend to verify the OTP
       const response = await axios.post('http://localhost:3000/verifyOTP', { email, otp });
 
+      console.log(response.data.verified);
+
       if (response.data.verified) {
-        setIsOTPVerified(true);
+        isOTPVerified = true;
         alert('Login successful!');
+        window.location.href = 'index.html';
       } else {
         alert('Invalid OTP. Please try again.');
       }
