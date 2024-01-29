@@ -84,19 +84,14 @@ app.post('/verifyOTP', (req, res) => {
 });
 
 // Serve HTML file
-app.get('/', (req, res) => {
-  // Check if the user is logged in
-  if (req.session.user) {
-    res.sendFile(path.join(__dirname, 'index.html'));
-  } else {
-    res.redirect('/login'); // Redirect to login page if not logged in
-  }
+
+
+app.get('/',(req,res)=> {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
-});
 
+// Keep track of connected users
 // Keep track of connected users
 const users = new Map();
 let userCounter = 0; // Counter to track the order of connections
@@ -133,6 +128,7 @@ io.on('connection', (socket) => {
     userCounter--;
   });
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
