@@ -15,6 +15,9 @@ app.use(cors()); // Use the 'cors' middleware
 const session = require('express-session');
 app.use(session({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
 
+// Set up middleware to serve static files (including images) from the "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Set the 'user' property
 session.user = false;
