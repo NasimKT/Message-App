@@ -98,10 +98,18 @@ app.get('/',(req,res)=> {
 // Keep track of connected users
 const users = new Map();
 let userCounter = 0; // Counter to track the order of connections
+const MAX_USERS = 2; // Maximum number of allowed users
 
 // Handle WebSocket connections
 io.on('connection', (socket) => {
   console.log('User connected');
+
+  // Check if the maximum number of users is reached
+  if (userCounter >= MAX_USERS) {
+    console.log('Connection refused: Maximum number of users reached');
+    socket.disconnect(true); // Disconnect the socket
+    return;
+  }
 
   // Assign a user role based on the order of connection
   userCounter++;
@@ -131,6 +139,7 @@ io.on('connection', (socket) => {
     userCounter--;
   });
 });
+
 
 
 // Start the server
